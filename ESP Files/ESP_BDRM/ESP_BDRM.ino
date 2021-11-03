@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include <WiFi.h>
 #include <HTTPClient.h>
+#include "time.h"
 #include <ArduinoJson.h>
 #include <BLEDevice.h>
 #include <BLEUtils.h>
@@ -18,8 +19,25 @@ BLEScan* pBLEScan;
 const char* ssid = "iPhone";
 const char* password =  "12345678";
 const char* serverName = "https://webhooks.mongodb-realm.com/api/client/v2.0/app/predictor-rjhbq/service/PushBLEData/incoming_webhook/webhook_bdrm?secret=SIoT";
-
 StaticJsonDocument<500> doc;
+
+const char* ntpServer = "pool.ntp.org";
+
+
+unsigned long getTime() {
+  configTime(0, 0, ntpServer);
+  time_t now;
+  struct tm timeinfo;
+  if (!getLocalTime(&timeinfo)) {
+    //Serial.println("Failed to obtain time");
+    return(0);
+  }
+  time(&now);
+  int delayTime = 600-(now % 600);
+  return delayTime;
+}
+
+
 
 void setup() {
   Serial.begin(115200); //Enable UART on ESP32
@@ -54,7 +72,7 @@ void setup() {
     Serial.println("Connecting to WiFi..");}
   Serial.println("Connected to the WiFi network");
   
-  if(WiFi.status()== WL_CONNECTED){
+  if (WiFi.status()== WL_CONNECTED) {
              
       doc["timeStampID"] = 10000;
 
@@ -76,14 +94,21 @@ void setup() {
       int httpResponseCode = http.POST(json);
       Serial.println(httpResponseCode);
 
-      delay(5000);
     }
     else {
       Serial.println("WiFi Disconnected");
     }
+
+  int delayTime = getTime();
+  Serial.println(delayTime);
  
-  beaconDetected = false;
+  WiFi.disconnect(true);
   WiFi.mode(WIFI_OFF);
+
+  beaconDetected = false;
+
+  
+
   
 }
 void loop() {
