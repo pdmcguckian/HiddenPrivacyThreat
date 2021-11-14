@@ -16,13 +16,13 @@ BLEScan* pBLEScan;
 
 
 //WiFi Variables
-//const char* ssid = "BT-7XCK6F";
-//const char* password =  "urgcqY3H3XCPDv";
-const char* ssid = "iPhone";
-const char* password =  "12345678";
+const char* ssid = "BT-7XCK6F";
+const char* password =  "urgcqY3H3XCPDv";
 const char* serverName = "https://webhooks.mongodb-realm.com/api/client/v2.0/app/predictor-rjhbq/service/PushBLEData/incoming_webhook/webhook_bdrm?secret=SIoT";
 StaticJsonDocument<500> doc;
-
+int backlog = 0;
+int timeStampStack[720];
+int RSSIStack[720];
 
 //Server used to find time
 const char* ntpServer = "pool.ntp.org";
@@ -65,42 +65,64 @@ int pollBLEBeacon() {
 
 //Function to push collected data instance to MongoDB server
 int pushToDB(int becaonRSSI, int awakeTime) {
-  
+
+  timeStampStack[backlog] = awakeTime;
+  RSSIStack[backlog] = becaonRSSI;
+
+  int vla1 = timeStampStack[backlog];
+  int vla2 = RSSIStack[backlog];
+  //Serial.println(vla1);
+  //Serial.println(vla2);
+
   //Connects to home WiFi network
   WiFi.begin(ssid, password);
-  while (WiFi.status() != WL_CONNECTED) {
+  
+  long connect_time = millis();
+  while ((WiFi.status() != WL_CONNECTED) && ((millis() - connect_time) < 10000)) {
     delay(500);
     Serial.println("Connecting to WiFi..");}
-  Serial.println("Connected to the WiFi network");
+ 
 
   
-  if (WiFi.status()== WL_CONNECTED) {
+  if (WiFi.status() == WL_CONNECTED) {
+      Serial.println("Connected to the WiFi network");
+      
+      for (int i = 0; i <= backlog; i++) { 
+        
+        //Saves the standardised awake minute and collected RSSI value to a JSON file
+        doc["timeStampID"] = timeStampStack[i];
+        doc["rssiBDRM"] = RSSIStack[i];
+        Serial.println(timeStampStack[i]);
+        Serial.println(RSSIStack[i]);
+        timeStampStack[i] == 0;
+        RSSIStack[i] == 0;
 
-      //Saves the standardised awake minute and collected RSSI value to a JSON file
-      doc["timeStampID"] = awakeTime;
-      doc["rssiBDRM"] = becaonRSSI;
-
-      //Pushes JSON file using a post request to the mongoDB database using a webook
-      HTTPClient http;
-      http.begin(serverName);
-      http.addHeader("Content-Type", "application/json");
-      String json;
-      serializeJson(doc, json);
-      int httpResponseCode = http.POST(json);
+        
+        //Pushes JSON file using a post request to the mongoDB database using a webook
+        HTTPClient http;
+        http.begin(serverName);
+        http.addHeader("Content-Type", "application/json");
+        String json;
+        serializeJson(doc, json);
+        int httpResponseCode = http.POST(json);
+        Serial.println(httpResponseCode);
+      }
 
       //Returns Reponse Code
-      return httpResponseCode;
+      return 1;
+
 
     }
     else {
-      Serial.println("WiFi Disconnected");
-      
+      Serial.println("WiFi Connection Failed");
+      backlog = backlog + 1;
+
       return 0;
-    }
+    };
     
 }
 
-int timeTillNextPoll() {
+int timeTillNextPoll() {  
   configTime(0, 0, ntpServer);
   time_t now;
   struct tm timeinfo;
@@ -141,11 +163,12 @@ void setup() {
 }
 void loop() {
   int beaconRSSI = pollBLEBeacon();
-  Serial.println(beaconRSSI);
   int response = pushToDB(beaconRSSI, awakeTime);
-  Serial.println(response);
+  
+  if (response == 1) {
+    backlog = 0;
+  }
   timeTillNextPoll();
-  Serial.println(delayTime);
 
   Serial.println("Entering Deep Sleep");
   delay(delayTime);

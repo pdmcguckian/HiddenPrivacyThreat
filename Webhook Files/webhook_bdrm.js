@@ -12,7 +12,7 @@ exports = function(payload,response) {
     
     sensordata.updateOne(
                 {"timeStampID":document.timeStampID}, //Filter
-                {$set: {"rssiBDRM": document.rssiBDRM}},
+                {$set: {"rssiBRDM": document.rssiBRDM}},
                 {upsert:true} //Options
               
                  ).then(result => {

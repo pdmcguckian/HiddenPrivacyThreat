@@ -1,0 +1,219 @@
+<!doctype html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<title>P. D. McGuckian | SIoT Dashboard</title>
+
+	<meta property="og:title" h_footercontent='P. D. McGuckian | SIoT Dashboard'/>
+    <meta name="viewport" content="width=device-width, initial-scale=0.86, maximum-scale=3.0, minimum-scale=0.86">
+
+	<link rel="stylesheet" href="pdmcguckian.css">
+	<link rel="stylesheet" href="https://use.typekit.net/jcz8ueb.css">
+
+	<link rel="icon" href="/favicon.ico">
+	<link rel="apple-touch-icon" href="/favicon192.png">
+	
+	<!-- The core Firebase JS SDK is always required and must be listed first -->
+	<script src="https://www.gstatic.com/firebasejs/7.19.0/firebase-app.js"></script>
+
+	<!-- TODO: Add SDKs for Firebase products that you want to use
+		https://firebase.google.com/docs/web/setup#available-libraries -->
+	<script src="https://www.gstatic.com/firebasejs/7.19.0/firebase-analytics.js"></script>
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+
+	<script>
+	// Your web app's Firebase configuration
+	var firebaseConfig = {
+		apiKey: "AIzaSyDLV7i3s09cZ19wyP1AP1SdeTqNyP3jnX0",
+		authDomain: "portfolio-36a49.firebaseapp.com",
+		databaseURL: "https://portfolio-36a49.firebaseio.com",
+		projectId: "portfolio-36a49",
+		storageBucket: "portfolio-36a49.appspot.com",
+		messagingSenderId: "886630373892",
+		appId: "1:886630373892:web:4d62d4625d110d5315f351",
+		measurementId: "G-H76XH15R9E"
+	};
+	// Initialize Firebase
+	firebase.initializeApp(firebaseConfig);
+	firebase.analytics();
+	</script>	
+
+</head>
+
+<body>
+
+	<div class="h_buttonheader">
+		<div id="aboutcard" class="cardhover" onmouseover="projectCards(0)"><p>About</p></div>
+		<div id="predictionscard" class="card" onmouseover="projectCards(1)"><p>Predictions</p></div>
+		<div id="truedatacard" class="card" onmouseover="projectCards(2)"><p>True Data</p></div>
+	</div>
+
+	<div class="h_main" id="desktop">
+		<div class="h_about" id="about">
+			
+			<div class="h_welcometext">
+				<h1>Welcome</h1>
+			</div>
+			
+			<div class="h_aboutcontent">
+				<div class="h_introtext">
+					<h5>Most consumers, when asked say they are extremely concerned about data privacy - finding the idea that technology companies can infer information like their sleep schedulues, emotional state, drinking habits and then sell it to their insurance provider or employer absolutely horrifying.</h5>
+					<h5>However consumers continue to buy and use the data collecting smart home devices that these companies use to make these predictions. This is because studies have shown that typical consumers are unaware of how valuable the information these devices collect can be.</h5>
+					<h5>Thus to demonstarate the privacy risks these devices represent I have placed BLE beacons in my flat to simulaute a home full of smart devices tracking my activity and I have been using the data to predict what most people would call sensitive information. The video explains how it works.</h5>
+				</div>
+
+				<div class="h_content">
+					<div class="h_introvideoboarder">
+						<div id="h_projectvideo">
+							<video controls class="h_video">
+								<source src="opaque_main.mp4" type="video/mp4">
+							</video>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="h_predictions" id="predictions">
+	
+		</div>
+
+
+		<div class="h_truedata" id="truedata">
+			<canvas id="myChart" style="width:100%"></canvas>
+		</div>
+	</div>
+	
+	
+
+
+
+
+
+	<div class="h_main_mob" id="mobile">
+		
+	</div>
+
+</body>	
+
+<script>
+	function projectCards(section) {
+		var about = document.getElementById("about");
+		var predictions = document.getElementById("predictions");
+		var truedata = document.getElementById("truedata");
+
+		document.getElementById("aboutcard").className = "card";
+		document.getElementById("predictionscard").className = "cardhover";
+		document.getElementById("truedatacard").className = "card";
+		
+		if (section===0) {
+			about.style.display = "flex";
+			predictions.style.display = "none";
+			truedata.style.display = "none";
+
+			console.log(document.getElementById("aboutcard").className);
+
+			document.getElementById("aboutcard").className = "cardhover";
+			document.getElementById("predictionscard").className = "card";
+			document.getElementById("truedatacard").className = "card";
+		}
+
+		if (section===1) {
+			about.style.display = "none";
+			predictions.style.display = "flex";
+			truedata.style.display = "none";
+
+			document.getElementById("aboutcard").className = "card";
+			document.getElementById("predictionscard").className = "cardhover";
+			document.getElementById("truedatacard").className = "card";
+		}
+		
+		if (section===2) {
+			render_graph();
+
+			about.style.display = "none";
+			predictions.style.display = "none";
+			truedata.style.display = "flex";
+
+			document.getElementById("aboutcard").className = "card";
+			document.getElementById("predictionscard").className = "card";
+			document.getElementById("truedatacard").className = "cardhover";
+		}
+}
+</script>
+
+<script>
+	async function render_graph() {
+
+		var bdrmValues = [];
+		var lvngrmValues = [];
+		var ktchnValues = [];
+		var xValues = [];
+		
+		var requestURL = "https://webhooks.mongodb-realm.com/api/client/v2.0/app/predictor-rjhbq/service/sendWebApp/incoming_webhook/webhook_collectBLE?secret=SIoT";
+		var xhr = new XMLHttpRequest();
+		xhr.open("POST", requestURL);
+		xhr.setRequestHeader("Accept", "application/json");
+		xhr.send();
+
+		xhr.onreadystatechange = function () {
+		if (xhr.readyState === 4) {
+			console.log(xhr.status);
+			//console.log(xhr.responseText);
+			var collectedBLEData = JSON.parse(xhr.responseText);
+			console.log(typeof collectedBLEData);
+
+			for(var i = 0; i < 1440; i++) {
+				var obj = collectedBLEData[i];
+				
+				try {
+				bdrmValues.push(Number(obj.rssiBDRM.$numberInt));
+				lvngrmValues.push(Number(obj.rssiLVNGRM.$numberInt));
+				ktchnValues.push(Number(obj.rssiKTCHN.$numberInt));
+				xValues.push(Number(obj.timeStampID.$numberInt));
+				}
+				catch(err) {
+				console.log(obj)
+				}
+
+			}
+
+			new Chart("myChart", {
+			type: "line",
+			data: {
+				labels: xValues,
+				datasets: [{
+				data: bdrmValues,
+				borderColor: "red",
+				fill: false
+				},{
+				data: ktchnValues,
+				borderColor: "green",
+				fill: false
+				},{
+				data: lvngrmValues,
+				borderColor: "blue",
+				fill: false
+				}]
+			},
+			options: {
+				legend: {display: false}
+			}
+			});
+
+		}};
+	}
+
+
+	/*
+	var xValues = [100,200,300,400,500,600,700,800,900,1000];
+	*/
+</script>
+
+
+
+
+
+</html>
