@@ -44,17 +44,23 @@
 
 <body>
 
-	<div class="h_buttonheader">
+	<div class="h_cardheader">
 		<div id="aboutcard" class="cardhover" onmouseover="projectCards(0)"><p>About</p></div>
 		<div id="predictionscard" class="card" onmouseover="projectCards(1)"><p>Predictions</p></div>
 		<div id="truedatacard" class="card" onmouseover="projectCards(2)"><p>True Data</p></div>
 	</div>
 
+
 	<div class="h_main" id="desktop">
 		<div class="h_about" id="about">
 			
-			<div class="h_welcometext">
-				<h1>Welcome</h1>
+			<div class="h_headersection">
+				<div><h1>About</h1></div>
+				<div class="h_datebuttons">
+					<a class="buttons" href="#" onclick="change_date(-1);"><p>Day Back</p></a>
+					<h2>DATE</h2>
+					<a class="buttons" href="#" onclick="change_date(+1);"><p>Day Forward</p></a>
+				</div>
 			</div>
 			
 			<div class="h_aboutcontent">
@@ -77,11 +83,27 @@
 		</div>
 
 		<div class="h_predictions" id="predictions">
+			<div class="h_headersection">
+				<div><h1>Predictions</h1></div>
+				<div class="h_datebuttons">
+					<a class="buttons" href="#" onclick="change_date(+1);"><p>Day Back</p></a>
+					<h2>DATE</h2>
+					<a class="buttons" href="#" onclick="change_date(-1);"><p>Day Forward</p></a>
+				</div>
+			</div>
 	
 		</div>
 
 
 		<div class="h_truedata" id="truedata">
+			<div class="h_headersection">
+				<div><h1>True Data</h1></div>
+				<div class="h_datebuttons">
+					<a class="buttons" href="#" onclick="change_date(-1);"><p>Day Back</p></a>
+					<h2 id="date"></h2>
+					<a class="buttons"href="#" onclick="change_date(+1);"><p>Day Forward</p></a>
+				</div>
+			</div>
 			<canvas id="myChart" style="width:100%"></canvas>
 		</div>
 	</div>
@@ -131,7 +153,7 @@
 		}
 		
 		if (section===2) {
-			render_graph();
+			render_true_graph();
 
 			about.style.display = "none";
 			predictions.style.display = "none";
@@ -145,9 +167,18 @@
 </script>
 
 <script>
-	async function render_graph() {
+	var dateControl = 0;
+	var date = new Date()
+	document.getElementById('date').innerHTML = date.toISOString().substring(0, 10);
 
-		var date = new Date()
+	function change_date(direction) {
+		dateControl = dateControl + direction;
+		date.setDate(date.getDate() + dateControl);
+		document.getElementById('date').innerHTML = date.toISOString().substring(0, 10);
+		render_true_graph()
+	}
+
+	async function render_true_graph() {
 		var pushDate = date.toISOString().substring(0, 10);
 
 		const javaScriptRelease = Date.parse(pushDate)/1000;

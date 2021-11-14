@@ -27,6 +27,7 @@ a:hover {
     padding: 9px 15px 5px 15px;
     text-align: center;
     line-height: 20px;
+    height: 25px;
     color:white !important;
     margin-left:auto;
     display: flex;
@@ -55,7 +56,7 @@ p {
     margin-block-end: 0.25em;
 }
 
-h1 { /*Major Titles */
+h1 { /*Page Titles */
     font-family: neue-haas-grotesk-display,sans-serif;
     font-weight: 600;
     font-style: normal;
@@ -64,14 +65,16 @@ h1 { /*Major Titles */
     text-align: left;
     margin-block-start: 0em;
     margin-bottom: 30px;
+    margin-right: 0px;
   }
 
 
-h2 { /*Card Titles*/
+h2 { /*Date Field*/
     font-family: neue-haas-grotesk-display,sans-serif;
     font-weight: 600;
     font-style: normal;
     font-size: 23px;
+    margin-top: 20px;
     margin-block-start: 0em;
     margin-block-end: 0em;
 }
@@ -124,7 +127,7 @@ h6 { /* Mobile Home Body Text*/
 
 /* DESKTOP HOME SCREEN */ 
 
-.h_buttonheader {
+.h_cardheader {
     width: calc(100%-16vh);
     min-width: 1070px;
     max-width: 1300px;
@@ -178,14 +181,26 @@ h6 { /* Mobile Home Body Text*/
     padding-right: 8vh;
 }
 
+.h_headersection {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    height: 45px;
+    padding-bottom: 25px;
+}
+
+.h_datebuttons {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
 .h_about {
     width: 100%;
     display: flex;
     flex-direction: column;
-}
-
-.h_welcometext {
-    width: 100%;
 }
 
 .h_aboutcontent {
