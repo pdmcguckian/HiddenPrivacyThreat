@@ -147,6 +147,20 @@
 <script>
 	async function render_graph() {
 
+		var date = new Date()
+		var pushDate = date.toISOString().substring(0, 10);
+
+		const javaScriptRelease = Date.parse(pushDate)/1000;
+
+		console.log(javaScriptRelease);
+
+		var data = {
+			date: javaScriptRelease
+    	};
+
+		var json = JSON.stringify(data);
+
+
 		var bdrmValues = [];
 		var lvngrmValues = [];
 		var ktchnValues = [];
@@ -156,12 +170,12 @@
 		var xhr = new XMLHttpRequest();
 		xhr.open("POST", requestURL);
 		xhr.setRequestHeader("Accept", "application/json");
-		xhr.send();
+		xhr.send(json);
 
 		xhr.onreadystatechange = function () {
 		if (xhr.readyState === 4) {
 			console.log(xhr.status);
-			//console.log(xhr.responseText);
+			console.log(xhr.responseText);
 			var collectedBLEData = JSON.parse(xhr.responseText);
 			console.log(typeof collectedBLEData);
 
@@ -175,7 +189,6 @@
 				xValues.push(Number(obj.timeStampID.$numberInt));
 				}
 				catch(err) {
-				console.log(obj)
 				}
 
 			}
@@ -206,10 +219,6 @@
 		}};
 	}
 
-
-	/*
-	var xValues = [100,200,300,400,500,600,700,800,900,1000];
-	*/
 </script>
 
 
