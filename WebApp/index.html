@@ -198,8 +198,6 @@
 
 		const javaScriptRelease = Date.parse(pushDate)/1000;
 
-		console.log(javaScriptRelease);
-
 		var data = {
 			date: javaScriptRelease
     	};
@@ -229,10 +227,11 @@
 				var obj = collectedBLEData[i];
 				
 				try {
+				var time = new Date(obj.timeStampID.$numberInt*1000).toISOString().substring(11, 16);
 				bdrmValues.push(Number(obj.rssiBDRM.$numberInt));
 				lvngrmValues.push(Number(obj.rssiLVNGRM.$numberInt));
 				ktchnValues.push(Number(obj.rssiKTCHN.$numberInt));
-				xValues.push(Number(obj.timeStampID.$numberInt));
+				xValues.push(time);
 				}
 				catch(err) {
 				}
