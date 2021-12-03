@@ -58,19 +58,19 @@
 				<div><h1>About</h1></div>
 				<div class="h_datebuttons">
 					<a class="buttons" href="#" onclick="change_date(-1);"><p>Day Back</p></a>
-					<h2>DATE</h2>
-					<a class="buttons" href="#" onclick="change_date(+1);"><p>Day Forward</p></a>
+					<h2 id="date1"></h2>
+					<a class="buttons" href="#" onclick="change_date(1);"><p>Day Forward</p></a>
 				</div>
 			</div>
 			
 			<div class="h_aboutcontent">
-				<div class="h_introtext">
+				<div class="h_col1">
 					<h5>Most consumers, when asked say they are extremely concerned about data privacy - finding the idea that technology companies can infer information like their sleep schedulues, emotional state, drinking habits and then sell it to their insurance provider or employer absolutely horrifying.</h5>
 					<h5>However consumers continue to buy and use the data collecting smart home devices that these companies use to make these predictions. This is because studies have shown that typical consumers are unaware of how valuable the information these devices collect can be.</h5>
 					<h5>Thus to demonstarate the privacy risks these devices represent I have placed BLE beacons in my flat to simulaute a home full of smart devices tracking my activity and I have been using the data to predict what most people would call sensitive information. The video explains how it works.</h5>
 				</div>
 
-				<div class="h_content">
+				<div class="h_col2">
 					<div class="h_introvideoboarder">
 						<div id="h_projectvideo">
 							<video controls class="h_video">
@@ -86,8 +86,8 @@
 			<div class="h_headersection">
 				<div><h1>Predictions</h1></div>
 				<div class="h_datebuttons">
-					<a class="buttons" href="#" onclick="change_date(+1);"><p>Day Back</p></a>
-					<h2>DATE</h2>
+					<a class="buttons" href="#" onclick="change_date(1);"><p>Day Back</p></a>
+					<h2 id="date2"></h2>
 					<a class="buttons" href="#" onclick="change_date(-1);"><p>Day Forward</p></a>
 				</div>
 			</div>
@@ -100,11 +100,22 @@
 				<div><h1>True Data</h1></div>
 				<div class="h_datebuttons">
 					<a class="buttons" href="#" onclick="change_date(-1);"><p>Day Back</p></a>
-					<h2 id="date"></h2>
-					<a class="buttons"href="#" onclick="change_date(+1);"><p>Day Forward</p></a>
+					<h2 id="date3"></h2>
+					<a class="buttons"href="#" onclick="change_date(1);"><p>Day Forward</p></a>
 				</div>
 			</div>
-			<canvas id="myChart" style="width:100%"></canvas>
+			<div class="h_truedatacontent">
+				<div class="h_col1">
+					<h2>Bedroom BLE Data</h2>
+					<canvas id="bedroom" style="width:45%"></canvas>
+					<h2>Living Room BLE Data</h2>
+					<canvas id="livingroom" style="width:45%"></canvas>
+				</div>
+				<div class="h_col2">
+					<h2>Kitchen BLE Data</h2>
+					<canvas id="kitchen" style="width:45%"></canvas>
+				</div>
+			</div>
 		</div>
 	</div>
 	
@@ -153,8 +164,6 @@
 		}
 		
 		if (section===2) {
-			render_true_graph();
-
 			about.style.display = "none";
 			predictions.style.display = "none";
 			truedata.style.display = "flex";
@@ -167,15 +176,21 @@
 </script>
 
 <script>
-	var dateControl = 0;
-	var date = new Date()
-	document.getElementById('date').innerHTML = date.toISOString().substring(0, 10);
+	var dateControl = 25;
+	var date = new Date("November " + dateControl + ", 2021")
+	document.getElementById('date1').innerHTML = date.toISOString().substring(0, 10);
+	document.getElementById('date2').innerHTML = date.toISOString().substring(0, 10);
+	document.getElementById('date3').innerHTML = date.toISOString().substring(0, 10);
+	render_true_graph();
 
 	function change_date(direction) {
+		if (dateControl < 26 && dateControl > 12) {
 		dateControl = dateControl + direction;
-		date.setDate(date.getDate() + dateControl);
-		document.getElementById('date').innerHTML = date.toISOString().substring(0, 10);
-		render_true_graph()
+		date = new Date("November " + dateControl + ", 2021")
+		document.getElementById('date1').innerHTML = date.toISOString().substring(0, 10);
+		document.getElementById('date2').innerHTML = date.toISOString().substring(0, 10);
+		document.getElementById('date3').innerHTML = date.toISOString().substring(0, 10);
+		render_true_graph()}
 	}
 
 	async function render_true_graph() {
@@ -224,7 +239,7 @@
 
 			}
 
-			new Chart("myChart", {
+			new Chart("bedroom", {
 			type: "line",
 			data: {
 				labels: xValues,
@@ -232,12 +247,34 @@
 				data: bdrmValues,
 				borderColor: "red",
 				fill: false
-				},{
-				data: ktchnValues,
+				}]
+			},
+			options: {
+				legend: {display: false}
+			}
+			});
+
+			new Chart("livingroom", {
+			type: "line",
+			data: {
+				labels: xValues,
+				datasets: [{
+				data: lvngrmValues,
 				borderColor: "green",
 				fill: false
-				},{
-				data: lvngrmValues,
+				}]
+			},
+			options: {
+				legend: {display: false}
+			}
+			});
+
+			new Chart("kitchen", {
+			type: "line",
+			data: {
+				labels: xValues,
+				datasets: [{
+				data: ktchnValues,
 				borderColor: "blue",
 				fill: false
 				}]

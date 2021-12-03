@@ -74,7 +74,7 @@ h2 { /*Date Field*/
     font-weight: 600;
     font-style: normal;
     font-size: 23px;
-    margin-top: 20px;
+    margin-top: 10px;
     margin-block-start: 0em;
     margin-block-end: 0em;
 }
@@ -122,6 +122,10 @@ h6 { /* Mobile Home Body Text*/
     text-align: left;
     line-height: 1.6;
     margin-block-start: 0em;
+}
+
+canvas {
+    padding-bottom: 30px;
 }
 
 
@@ -209,13 +213,19 @@ h6 { /* Mobile Home Body Text*/
     justify-content: space-between;
 }
 
-.h_introtext {
+.h_truedatacontent {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.h_col1 {
     width: 47.5%;
     display: flex;
     flex-direction: column;
 }
 
-.h_content {
+.h_col2 {
     width: 47.5%;
     display: flex;
     flex-direction: column;

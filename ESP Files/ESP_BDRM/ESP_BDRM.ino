@@ -16,8 +16,10 @@ BLEScan* pBLEScan;
 
 
 //WiFi Variables
-const char* ssid = "BT-7XCK6F";
-const char* password =  "urgcqY3H3XCPDv";
+//const char* ssid = "BT-7XCK6F";
+//const char* password =  "urgcqY3H3XCPDv";
+const char* ssid = "iPhone";
+const char* password =  "12345678";
 const char* serverName = "https://webhooks.mongodb-realm.com/api/client/v2.0/app/predictor-rjhbq/service/PushBLEData/incoming_webhook/webhook_bdrm?secret=SIoT";
 StaticJsonDocument<500> doc;
 int backlog = 0;
