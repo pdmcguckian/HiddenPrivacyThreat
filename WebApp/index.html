@@ -57,20 +57,20 @@
 			<div class="h_headersection">
 				<div><h1>About</h1></div>
 				<div class="h_datebuttons">
-					<a class="buttons" href="#" onclick="change_date(-1);"><p>Day Back</p></a>
+					<a class="buttons" style="margin-right: 10px;" href="#" onclick="change_date(-1);"><p>Day Back</p></a>
 					<h2 id="date1"></h2>
-					<a class="buttons" href="#" onclick="change_date(1);"><p>Day Forward</p></a>
+					<a class="buttons" style="margin-left: 10px;" href="#" onclick="change_date(1);"><p>Day Forward</p></a>
 				</div>
 			</div>
 			
 			<div class="h_aboutcontent">
-				<div class="h_col1">
+				<div class="h_halfcol">
 					<h5>Most consumers, when asked say they are extremely concerned about data privacy - finding the idea that technology companies can infer information like their sleep schedulues, emotional state, drinking habits and then sell it to their insurance provider or employer absolutely horrifying.</h5>
 					<h5>However consumers continue to buy and use the data collecting smart home devices that these companies use to make these predictions. This is because studies have shown that typical consumers are unaware of how valuable the information these devices collect can be.</h5>
 					<h5>Thus to demonstarate the privacy risks these devices represent I have placed BLE beacons in my flat to simulaute a home full of smart devices tracking my activity and I have been using the data to predict what most people would call sensitive information. The video explains how it works.</h5>
 				</div>
 
-				<div class="h_col2">
+				<div class="h_halfcol">
 					<div class="h_introvideoboarder">
 						<div id="h_projectvideo">
 							<video controls class="h_video">
@@ -86,14 +86,26 @@
 			<div class="h_headersection">
 				<div><h1>Predictions</h1></div>
 				<div class="h_datebuttons">
-					<a class="buttons" href="#" onclick="change_date(-1);"><p>Day Back</p></a>
+					<a class="buttons" style="margin-right: 10px;" href="#" onclick="change_date(-1);"><p>Day Back</p></a>
 					<h2 id="date2"></h2>
-					<a class="buttons" href="#" onclick="change_date(1);"><p>Day Forward</p></a>
+					<a class="buttons" style="margin-left: 10px;" href="#" onclick="change_date(1);"><p>Day Forward</p></a>
 				</div>
 			</div>
 			<h2>Room Prediction</h2>
 			<div class="h_predictionscontent">
-				<canvas id="roomlocation" style="width:100%"></canvas>
+				<div class="h_80col">
+					<canvas id="roomlocation" style="width:80%"></canvas>
+				</div>
+				<div class = "h_20col">
+					<div class="h_col_card">
+						<h4>Sleep Quality</h4>
+						<h4>Good</h4>
+					</div>
+					<div class="h_col_card">
+						<h4>Alcohol Consumed</h4>
+						<h4>False</h4>
+					</div>
+				</div>
 			</div>
 	
 		</div>
@@ -103,28 +115,34 @@
 			<div class="h_headersection">
 				<div><h1>True Data</h1></div>
 				<div class="h_datebuttons">
-					<a class="buttons" href="#" onclick="change_date(-1);"><p>Day Back</p></a>
+					<a class="buttons" style="margin-right: 10px;" href="#" onclick="change_date(-1);"><p>Day Back</p></a>
 					<h2 id="date3"></h2>
-					<a class="buttons"href="#" onclick="change_date(1);"><p>Day Forward</p></a>
+					<a class="buttons" style="margin-left: 10px;" href="#" onclick="change_date(1);"><p>Day Forward</p></a>
 				</div>
 			</div>
 			<div class="h_truedatacontent">
-				<div class="h_col1">
+				<div class="h_halfcol">
 					<h2>Bedroom BLE Data</h2>
 					<canvas id="bedroom" style="width:45%"></canvas>
 					<h2>Living Room BLE Data</h2>
 					<canvas id="livingroom" style="width:45%"></canvas>
 				</div>
-				<div class="h_col2">
+				<div class="h_halfcol">
 					<h2>Kitchen BLE Data</h2>
 					<canvas id="kitchen" style="width:45%"></canvas>
 					<h2>Event Data</h2>
 					<div class="h_truedatacontent">
-						<div class="h_col1">
-							<p>h1</p>
+						<div class="h_halfcol">
+							<div class="h_col_card">
+								<h4>Sleep Quality</h4>
+								<h4 id="sleepquality"></h4>
+							</div>
 						</div>
-						<div class="h_col2">
-							<p>h1</p>
+						<div class="h_halfcol">
+							<div class="h_col_card">
+								<h4>Alcohol Consumed</h4>
+								<h4 id="alcoholconsumed"></h4>
+							</div>
 						</div>
 					</div>
 				</div>
@@ -190,25 +208,25 @@
 	var dateControl = 25;
 	var date = new Date("November " + dateControl + ", 2021")
 	change_date_text();
-	render_true_graphs();
-	render_prediction_graphs();
+	render_graphs();
+	collect_events();
 
 	function change_date(direction) {
 		if (dateControl < 26 && dateControl > 12) {
 		dateControl = dateControl + direction;
 		date = new Date("November " + dateControl + ", 2021")
 		change_date_text();
-		render_true_graphs();
-		render_prediction_graphs()}}
+		render_graphs();
+		collect_events();}}
 
 	function change_date_text(direction) {
-		document.getElementById('date1').innerHTML = date.toISOString().substring(0, 10);
-		document.getElementById('date2').innerHTML = date.toISOString().substring(0, 10);
-		document.getElementById('date3').innerHTML = date.toISOString().substring(0, 10);
+		document.getElementById('date1').innerHTML = date.toISOString().substring(0, 10) + " - " + (dateControl + 1);
+		document.getElementById('date2').innerHTML = date.toISOString().substring(0, 10) + " - " + (dateControl + 1);
+		document.getElementById('date3').innerHTML = date.toISOString().substring(0, 10) + " - " + (dateControl + 1);
 	}
 
 
-	async function render_true_graphs() {
+	async function render_graphs() {
 		var pushDate = date.toISOString().substring(0, 10);
 		const javaScriptRelease = Date.parse(pushDate)/1000;
 		var data = {
@@ -218,10 +236,16 @@
 
 		var xValues = [];
 
-		//True Data Values
+		//Prediction Values
+		var ktchnBool = [];
+		var bdrmBool = [];
+		var lvngrmBool = [];
+		var wyBool = [];
+
+				//Prediction Values
+		var ktchnValues = [];
 		var bdrmValues = [];
 		var lvngrmValues = [];
-		var ktchnValues = [];
 
 		
 		var requestURL = "https://webhooks.mongodb-realm.com/api/client/v2.0/app/predictor-rjhbq/service/sendWebApp/incoming_webhook/webhook_collectBLE?secret=SIoT";
@@ -234,35 +258,83 @@
 		if (xhr.readyState === 4) {
 			var collectedBLEData = JSON.parse(xhr.responseText);
 			for(var i = 0; i < collectedBLEData.length; i++) {
+
 				var obj = collectedBLEData[i];
-				var time = new Date(obj.timeStampID.$numberInt*1000).toISOString().substring(11, 16);
-				xValues.push(time);
 				
 				try {
+
+					//Collect Values
 					bdrmRSSI = Number(obj.rssiBDRM.$numberInt);
-					bdrmValues.push(bdrmRSSI);
-				}
-				catch(err) {
-					bdrmValues.push(-100);
-				}
-
-				try {
-					ktchnRSSI = Number(obj.rssiKTCHN.$numberInt);
-					ktchnValues.push(ktchnRSSI);
-				}
-				catch(err) {
-					ktchnValues.push(-100);
-				}
-
-				try {
 					lvngrmRSSI = Number(obj.rssiLVNGRM.$numberInt);
+					ktchnRSSI = Number(obj.rssiKTCHN.$numberInt);
+
+					var time = new Date(obj.timeStampID.$numberInt*1000).toISOString().substring(11, 16);
+					ktchnValues.push(ktchnRSSI);
 					lvngrmValues.push(lvngrmRSSI);
+					bdrmValues.push(bdrmRSSI);
+					xValues.push(time);
+
+					//Prediction Graphs
+					if (bdrmRSSI == -100 && lvngrmRSSI == -100 && ktchnRSSI == -100) {
+						ktchnBool.push(0);
+						lvngrmBool.push(0);
+						bdrmBool.push(0);
+						wyBool.push(1);
+					}
+					else if (bdrmRSSI >= ktchnRSSI && bdrmRSSI >= lvngrmRSSI) {
+						ktchnBool.push(0);
+						lvngrmBool.push(0);
+						bdrmBool.push(1);
+						wyBool.push(0);
+					}
+					else if (lvngrmRSSI >= bdrmRSSI && lvngrmRSSI >= ktchnRSSI) {
+						ktchnBool.push(0);
+						lvngrmBool.push(1);
+						bdrmBool.push(0);
+						wyBool.push(0);
+					}
+
+					else if (ktchnRSSI >= bdrmRSSI && ktchnRSSI >= lvngrmRSSI) {
+						ktchnBool.push(1);
+						lvngrmBool.push(0);
+						bdrmBool.push(0);
+						wyBool.push(0);
+					}
+
 				}
 				catch(err) {
-					lvngrmValues.push(-100);
 				}
 
 			}
+
+			console.log(xValues[0])
+
+			new Chart("roomlocation", {
+			type: "line",
+			data: {
+				labels: xValues,
+				datasets: [{
+				data: bdrmBool,
+				borderColor: "red",
+				fill: true
+				},{
+				data: ktchnBool,
+				borderColor: "green",
+				fill: true
+				},{
+				data: lvngrmBool,
+				borderColor: "blue",
+				fill: true
+				},{
+				data: wyBool,
+				borderColor: "black",
+				fill: true
+				}]
+			},
+			options: {
+				legend: {display: false}
+			}
+			});
 
 			new Chart("bedroom", {
 			type: "line",
@@ -313,7 +385,7 @@
 	}
 
 
-	async function render_prediction_graphs() {
+	async function collect_events() {
 		var pushDate = date.toISOString().substring(0, 10);
 		const javaScriptRelease = Date.parse(pushDate)/1000;
 		var data = {
@@ -329,8 +401,13 @@
 		var lvngrmBool = [];
 		var wyBool = [];
 
+				//Prediction Values
+		var ktchnValues = [];
+		var bdrmValues = [];
+		var lvngrmValues = [];
+
 		
-		var requestURL = "https://webhooks.mongodb-realm.com/api/client/v2.0/app/predictor-rjhbq/service/sendWebApp/incoming_webhook/webhook_collectBLE?secret=SIoT";
+		var requestURL = "https://webhooks.mongodb-realm.com/api/client/v2.0/app/predictor-rjhbq/service/sendWebApp/incoming_webhook/webhook_collectFITBIT?secret=SIoT";
 		var xhr = new XMLHttpRequest();
 		xhr.open("POST", requestURL);
 		xhr.setRequestHeader("Accept", "application/json");
@@ -338,89 +415,15 @@
 
 		xhr.onreadystatechange = function () {
 		if (xhr.readyState === 4) {
-			var collectedBLEData = JSON.parse(xhr.responseText);
-			for(var i = 0; i < collectedBLEData.length; i++) {
+			var collectedEventData = JSON.parse(xhr.responseText);
+			
+			//Collect Values
+			sleepQuality = collectedEventData[0].SleepEfficiency.$numberInt;
+			AlcoholConsumed = collectedEventData[0].AlcoholConsumed;
+			document.getElementById('sleepquality').innerHTML = sleepQuality;
+			document.getElementById('alcoholconsumed').innerHTML = AlcoholConsumed;
 
-				var obj = collectedBLEData[i];
-				
-				try {
-
-					//Collect Values
-					bdrmRSSI = Number(obj.rssiBDRM.$numberInt);
-					lvngrmRSSI = Number(obj.rssiLVNGRM.$numberInt);
-					ktchnRSSI = Number(obj.rssiKTCHN.$numberInt);
-					var time = new Date(obj.timeStampID.$numberInt*1000).toISOString().substring(11, 16);
-
-					
-
-					//Prediction Graphs
-					if (bdrmRSSI == -100 && lvngrmRSSI == -100 && ktchnRSSI == -100) {
-						ktchnBool.push(0);
-						lvngrmBool.push(0);
-						bdrmBool.push(0);
-						wyBool.push(1);
-						xValues.push(time);
-					}
-					else if (bdrmRSSI >= ktchnRSSI && bdrmRSSI >= lvngrmRSSI) {
-						ktchnBool.push(0);
-						lvngrmBool.push(0);
-						bdrmBool.push(1);
-						wyBool.push(0);
-						xValues.push(time);
-					}
-					else if (lvngrmRSSI >= bdrmRSSI && lvngrmRSSI >= ktchnRSSI) {
-						ktchnBool.push(0);
-						lvngrmBool.push(1);
-						bdrmBool.push(0);
-						wyBool.push(0);
-						xValues.push(time);
-					}
-
-					else if (ktchnRSSI >= bdrmRSSI && ktchnRSSI >= lvngrmRSSI) {
-						ktchnBool.push(1);
-						lvngrmBool.push(0);
-						bdrmBool.push(0);
-						wyBool.push(0);
-						xValues.push(time);
-					}
-
-				}
-				catch(err) {
-				}
-
-			}
-
-			console.log(xValues[0])
-
-			new Chart("roomlocation", {
-			type: "line",
-			data: {
-				labels: xValues,
-				datasets: [{
-				data: bdrmBool,
-				borderColor: "red",
-				fill: true
-				},{
-				data: ktchnBool,
-				borderColor: "green",
-				fill: true
-				},{
-				data: lvngrmBool,
-				borderColor: "blue",
-				fill: true
-				},{
-				data: wyBool,
-				borderColor: "black",
-				fill: true
-				}]
-			},
-			options: {
-				legend: {display: false}
-			}
-			});
-
-		}};
-	}
+	}}}
 
 </script>
 

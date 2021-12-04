@@ -74,9 +74,7 @@ h2 { /*Date Field*/
     font-weight: 600;
     font-style: normal;
     font-size: 23px;
-    margin-top: 10px;
-    margin-block-start: 0em;
-    margin-block-end: 0em;
+    margin-top: 5px;
 }
 
 h3 { /*Project Footer Titles*/
@@ -92,12 +90,13 @@ h3 { /*Project Footer Titles*/
 
 h4 { /*Project Body Text*/
     font-family: neue-haas-grotesk-display,sans-serif;
-    font-weight: 500;
+    font-weight: 600;
     font-style: normal;
     font-size: 28.75px;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
     text-align: center;
     line-height: 1.6;
+    color: white;
 }
 
 h5 { /*Home Body Text*/
@@ -125,7 +124,7 @@ h6 { /* Mobile Home Body Text*/
 }
 
 canvas {
-    padding-bottom: 30px;
+    padding-bottom: 0px;
 }
 
 
@@ -225,16 +224,33 @@ canvas {
     justify-content: space-between;
 }
 
-.h_col1 {
+.h_halfcol {
     width: 47.5%;
     display: flex;
     flex-direction: column;
 }
 
-.h_col2 {
-    width: 47.5%;
+.h_80col{
+    width: 78.5%;
     display: flex;
     flex-direction: column;
+}
+
+.h_20col{
+    width: 18.5%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.h_col_card {
+    background-color: black;
+    border-radius: 20px;
+    height: 225px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
 .h_introvideoboarder{ /* DIV that project info sits inside*/
