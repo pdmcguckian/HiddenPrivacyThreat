@@ -86,10 +86,13 @@
 			<div class="h_headersection">
 				<div><h1>Predictions</h1></div>
 				<div class="h_datebuttons">
-					<a class="buttons" href="#" onclick="change_date(1);"><p>Day Back</p></a>
+					<a class="buttons" href="#" onclick="change_date(-1);"><p>Day Back</p></a>
 					<h2 id="date2"></h2>
-					<a class="buttons" href="#" onclick="change_date(-1);"><p>Day Forward</p></a>
+					<a class="buttons" href="#" onclick="change_date(1);"><p>Day Forward</p></a>
 				</div>
+			</div>
+			<div class="h_predictionscontent">
+				<canvas id="roomlocation" style="width:100%"></canvas>
 			</div>
 	
 		</div>
@@ -114,6 +117,7 @@
 				<div class="h_col2">
 					<h2>Kitchen BLE Data</h2>
 					<canvas id="kitchen" style="width:45%"></canvas>
+					<h2>Fitbit Data</h2>
 				</div>
 			</div>
 		</div>
@@ -146,8 +150,6 @@
 			predictions.style.display = "none";
 			truedata.style.display = "none";
 
-			console.log(document.getElementById("aboutcard").className);
-
 			document.getElementById("aboutcard").className = "cardhover";
 			document.getElementById("predictionscard").className = "card";
 			document.getElementById("truedatacard").className = "card";
@@ -178,37 +180,40 @@
 <script>
 	var dateControl = 25;
 	var date = new Date("November " + dateControl + ", 2021")
-	document.getElementById('date1').innerHTML = date.toISOString().substring(0, 10);
-	document.getElementById('date2').innerHTML = date.toISOString().substring(0, 10);
-	document.getElementById('date3').innerHTML = date.toISOString().substring(0, 10);
-	render_true_graph();
+	change_date_text();
+	render_true_graphs();
+	render_prediction_graphs();
 
 	function change_date(direction) {
 		if (dateControl < 26 && dateControl > 12) {
 		dateControl = dateControl + direction;
 		date = new Date("November " + dateControl + ", 2021")
+		change_date_text();
+		render_true_graphs();
+		render_prediction_graphs()}}
+
+	function change_date_text(direction) {
 		document.getElementById('date1').innerHTML = date.toISOString().substring(0, 10);
 		document.getElementById('date2').innerHTML = date.toISOString().substring(0, 10);
 		document.getElementById('date3').innerHTML = date.toISOString().substring(0, 10);
-		render_true_graph()}
 	}
 
-	async function render_true_graph() {
+
+	async function render_true_graphs() {
 		var pushDate = date.toISOString().substring(0, 10);
-
 		const javaScriptRelease = Date.parse(pushDate)/1000;
-
 		var data = {
 			date: javaScriptRelease
     	};
-
 		var json = JSON.stringify(data);
 
+		var xValues = [];
 
+		//True Data Values
 		var bdrmValues = [];
 		var lvngrmValues = [];
 		var ktchnValues = [];
-		var xValues = [];
+
 		
 		var requestURL = "https://webhooks.mongodb-realm.com/api/client/v2.0/app/predictor-rjhbq/service/sendWebApp/incoming_webhook/webhook_collectBLE?secret=SIoT";
 		var xhr = new XMLHttpRequest();
@@ -218,20 +223,25 @@
 
 		xhr.onreadystatechange = function () {
 		if (xhr.readyState === 4) {
-			console.log(xhr.status);
-			console.log(xhr.responseText);
 			var collectedBLEData = JSON.parse(xhr.responseText);
-			console.log(typeof collectedBLEData);
-
 			for(var i = 0; i < 1440; i++) {
 				var obj = collectedBLEData[i];
 				
 				try {
-				var time = new Date(obj.timeStampID.$numberInt*1000).toISOString().substring(11, 16);
-				bdrmValues.push(Number(obj.rssiBDRM.$numberInt));
-				lvngrmValues.push(Number(obj.rssiLVNGRM.$numberInt));
-				ktchnValues.push(Number(obj.rssiKTCHN.$numberInt));
-				xValues.push(time);
+
+					//Collect Values
+					bdrmRSSI = Number(obj.rssiBDRM.$numberInt);
+					lvngrmRSSI = Number(obj.rssiLVNGRM.$numberInt);
+					ktchnRSSI = Number(obj.rssiKTCHN.$numberInt);
+					var time = new Date(obj.timeStampID.$numberInt*1000).toISOString().substring(11, 16);
+
+					//True Data Graph Values
+					bdrmValues.push(bdrmRSSI);
+					lvngrmValues.push(lvngrmRSSI);
+					ktchnValues.push(ktchnRSSI);
+					
+					xValues.push(time);
+
 				}
 				catch(err) {
 				}
@@ -276,6 +286,113 @@
 				data: ktchnValues,
 				borderColor: "blue",
 				fill: false
+				}]
+			},
+			options: {
+				legend: {display: false}
+			}
+			});
+
+		}};
+	}
+
+
+	async function render_prediction_graphs() {
+		var pushDate = date.toISOString().substring(0, 10);
+		const javaScriptRelease = Date.parse(pushDate)/1000;
+		var data = {
+			date: javaScriptRelease
+    	};
+		var json = JSON.stringify(data);
+
+		var xValues = [];
+
+		//Prediction Values
+		var ktchnBool = [];
+		var bdrmBool = [];
+		var lvngrmBool = [];
+		var wyBool = [];
+
+		
+		var requestURL = "https://webhooks.mongodb-realm.com/api/client/v2.0/app/predictor-rjhbq/service/sendWebApp/incoming_webhook/webhook_collectBLE?secret=SIoT";
+		var xhr = new XMLHttpRequest();
+		xhr.open("POST", requestURL);
+		xhr.setRequestHeader("Accept", "application/json");
+		xhr.send(json);
+
+		xhr.onreadystatechange = function () {
+		if (xhr.readyState === 4) {
+			var collectedBLEData = JSON.parse(xhr.responseText);
+			for(var i = 0; i < 1440; i++) {
+				var obj = collectedBLEData[i];
+				
+				try {
+
+					//Collect Values
+					bdrmRSSI = Number(obj.rssiBDRM.$numberInt);
+					lvngrmRSSI = Number(obj.rssiLVNGRM.$numberInt);
+					ktchnRSSI = Number(obj.rssiKTCHN.$numberInt);
+					var time = new Date(obj.timeStampID.$numberInt*1000).toISOString().substring(11, 16);
+
+					
+
+					//Prediction Graphs
+					if (bdrmRSSI == -100 && lvngrmRSSI == -100 && ktchnRSSI == -100) {
+						ktchnBool.push(0);
+						lvngrmBool.push(0);
+						bdrmBool.push(0);
+						wyBool.push(1);
+						xValues.push(time);
+					}
+					else if (bdrmRSSI >= ktchnRSSI && bdrmRSSI >= lvngrmRSSI) {
+						ktchnBool.push(0);
+						lvngrmBool.push(0);
+						bdrmBool.push(1);
+						wyBool.push(0);
+						xValues.push(time);
+					}
+					else if (lvngrmRSSI >= bdrmRSSI && lvngrmRSSI >= ktchnRSSI) {
+						ktchnBool.push(0);
+						lvngrmBool.push(1);
+						bdrmBool.push(0);
+						wyBool.push(0);
+						xValues.push(time);
+					}
+
+					else if (ktchnRSSI >= bdrmRSSI && ktchnRSSI >= lvngrmRSSI) {
+						ktchnBool.push(1);
+						lvngrmBool.push(0);
+						bdrmBool.push(0);
+						wyBool.push(0);
+						xValues.push(time);
+					}
+
+				}
+				catch(err) {
+				}
+
+			}
+
+			new Chart("roomlocation", {
+			type: "line",
+			data: {
+				labels: xValues,
+				datasets: [{
+				data: bdrmBool,
+				borderColor: "red",
+				fill: true
+				},{
+				data: ktchnBool,
+				borderColor: "green",
+				fill: true
+				},{
+				data: lvngrmBool,
+				borderColor: "blue",
+				fill: true
+				},{
+				data: wyBool,
+				borderColor: "black",
+				fill: true
 				}]
 			},
 			options: {

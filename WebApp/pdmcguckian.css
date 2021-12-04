@@ -219,6 +219,12 @@ canvas {
     justify-content: space-between;
 }
 
+.h_predictionscontent {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
 .h_col1 {
     width: 47.5%;
     display: flex;
