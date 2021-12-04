@@ -91,6 +91,7 @@
 					<a class="buttons" href="#" onclick="change_date(1);"><p>Day Forward</p></a>
 				</div>
 			</div>
+			<h2>Room Prediction</h2>
 			<div class="h_predictionscontent">
 				<canvas id="roomlocation" style="width:100%"></canvas>
 			</div>
@@ -117,7 +118,15 @@
 				<div class="h_col2">
 					<h2>Kitchen BLE Data</h2>
 					<canvas id="kitchen" style="width:45%"></canvas>
-					<h2>Fitbit Data</h2>
+					<h2>Event Data</h2>
+					<div class="h_truedatacontent">
+						<div class="h_col1">
+							<p>h1</p>
+						</div>
+						<div class="h_col2">
+							<p>h1</p>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -224,26 +233,33 @@
 		xhr.onreadystatechange = function () {
 		if (xhr.readyState === 4) {
 			var collectedBLEData = JSON.parse(xhr.responseText);
-			for(var i = 0; i < 1440; i++) {
+			for(var i = 0; i < collectedBLEData.length; i++) {
 				var obj = collectedBLEData[i];
+				var time = new Date(obj.timeStampID.$numberInt*1000).toISOString().substring(11, 16);
+				xValues.push(time);
 				
 				try {
-
-					//Collect Values
 					bdrmRSSI = Number(obj.rssiBDRM.$numberInt);
-					lvngrmRSSI = Number(obj.rssiLVNGRM.$numberInt);
-					ktchnRSSI = Number(obj.rssiKTCHN.$numberInt);
-					var time = new Date(obj.timeStampID.$numberInt*1000).toISOString().substring(11, 16);
-
-					//True Data Graph Values
 					bdrmValues.push(bdrmRSSI);
-					lvngrmValues.push(lvngrmRSSI);
-					ktchnValues.push(ktchnRSSI);
-					
-					xValues.push(time);
-
 				}
 				catch(err) {
+					bdrmValues.push(-100);
+				}
+
+				try {
+					ktchnRSSI = Number(obj.rssiKTCHN.$numberInt);
+					ktchnValues.push(ktchnRSSI);
+				}
+				catch(err) {
+					ktchnValues.push(-100);
+				}
+
+				try {
+					lvngrmRSSI = Number(obj.rssiLVNGRM.$numberInt);
+					lvngrmValues.push(lvngrmRSSI);
+				}
+				catch(err) {
+					lvngrmValues.push(-100);
 				}
 
 			}
@@ -323,7 +339,8 @@
 		xhr.onreadystatechange = function () {
 		if (xhr.readyState === 4) {
 			var collectedBLEData = JSON.parse(xhr.responseText);
-			for(var i = 0; i < 1440; i++) {
+			for(var i = 0; i < collectedBLEData.length; i++) {
+
 				var obj = collectedBLEData[i];
 				
 				try {
@@ -372,6 +389,8 @@
 				}
 
 			}
+
+			console.log(xValues[0])
 
 			new Chart("roomlocation", {
 			type: "line",
