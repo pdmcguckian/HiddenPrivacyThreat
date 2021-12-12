@@ -212,7 +212,7 @@
 	collect_events();
 
 	function change_date(direction) {
-		if (dateControl < 26 && dateControl > 12) {
+		if (dateControl < 31 && dateControl > 12) {
 		dateControl = dateControl + direction;
 		date = new Date("November " + dateControl + ", 2021")
 		change_date_text();
