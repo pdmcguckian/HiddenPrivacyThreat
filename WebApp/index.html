@@ -58,7 +58,7 @@
 				<div><h1>About</h1></div>
 				<div class="h_datebuttons">
 					<a class="buttons" style="margin-right: 10px;" href="#" onclick="change_date(-1);"><p>Day Back</p></a>
-					<h2 id="date1"></h2>
+					<h6 id="date1"></h6>
 					<a class="buttons" style="margin-left: 10px;" href="#" onclick="change_date(1);"><p>Day Forward</p></a>
 				</div>
 			</div>
@@ -87,13 +87,13 @@
 				<div><h1>Predictions</h1></div>
 				<div class="h_datebuttons">
 					<a class="buttons" style="margin-right: 10px;" href="#" onclick="change_date(-1);"><p>Day Back</p></a>
-					<h2 id="date2"></h2>
+					<h6 id="date2"></h6>
 					<a class="buttons" style="margin-left: 10px;" href="#" onclick="change_date(1);"><p>Day Forward</p></a>
 				</div>
 			</div>
 			<h2>Room Prediction</h2>
 			<div class="h_predictionscontent">
-				<div class="h_80col">
+				<div class="h_80col" style="height: 550px">
 					<canvas id="roomlocation" style="width:80%"></canvas>
 				</div>
 				<div class = "h_20col">
@@ -116,18 +116,18 @@
 				<div><h1>True Data</h1></div>
 				<div class="h_datebuttons">
 					<a class="buttons" style="margin-right: 10px;" href="#" onclick="change_date(-1);"><p>Day Back</p></a>
-					<h2 id="date3"></h2>
+					<h6 id="date3"></h6>
 					<a class="buttons" style="margin-left: 10px;" href="#" onclick="change_date(1);"><p>Day Forward</p></a>
 				</div>
 			</div>
 			<div class="h_truedatacontent">
-				<div class="h_halfcol">
+				<div class="h_halfcol" style="height: 250px">
 					<h2>Bedroom BLE Data</h2>
 					<canvas id="bedroom" style="width:45%"></canvas>
 					<h2>Living Room BLE Data</h2>
 					<canvas id="livingroom" style="width:45%"></canvas>
 				</div>
-				<div class="h_halfcol">
+				<div class="h_halfcol" style="height: 250px">
 					<h2>Kitchen BLE Data</h2>
 					<canvas id="kitchen" style="width:45%"></canvas>
 					<h2>Event Data</h2>
@@ -140,7 +140,7 @@
 						</div>
 						<div class="h_halfcol">
 							<div class="h_col_card">
-								<h4>Alcohol Consumed</h4>
+								<h4>Alcohol</h4>
 								<h4 id="alcoholconsumed"></h4>
 							</div>
 						</div>
@@ -190,6 +190,11 @@
 			document.getElementById("aboutcard").className = "card";
 			document.getElementById("predictionscard").className = "cardhover";
 			document.getElementById("truedatacard").className = "card";
+
+			change_date_text();
+			render_graphs();
+			collect_events();
+
 		}
 		
 		if (section===2) {
@@ -200,29 +205,69 @@
 			document.getElementById("aboutcard").className = "card";
 			document.getElementById("predictionscard").className = "card";
 			document.getElementById("truedatacard").className = "cardhover";
+
+			change_date_text();
+			render_graphs();
+			collect_events();
 		}
 }
 </script>
 
 <script>
-	var dateControl = 25;
+	var dateControl = 16;
+	var NextDate = 17;
 	var date = new Date("November " + dateControl + ", 2021")
 	change_date_text();
 	render_graphs();
 	collect_events();
+	charts_drawn = false;
 
 	function change_date(direction) {
-		if (dateControl < 31 && dateControl > 12) {
+		if (charts_drawn) {
+				chart1.destroy();
+				chart2.destroy();
+				chart3.destroy();
+				chart4.destroy();
+			}
 		dateControl = dateControl + direction;
-		date = new Date("November " + dateControl + ", 2021")
+		NextDate = dateControl + 1;
+
+		if (dateControl < 12 && dateControl > 10) {
+			dateControl = 12;
+			NextDate = 13;
+		}
+
+		else if (dateControl < 8 && dateControl > 4) {
+			dateControl = 4;
+			NextDate = 5;
+		}
+
+		else if (dateControl == 31) {
+			dateControl = 1;
+			NextDate = 2;
+		}
+
+		else if (dateControl == 0) {
+			dateControl = 30;
+			NextDate = 1;
+		}
+
+		if (dateControl > 4) {
+			date = new Date("November " + dateControl + ", 2021")
+		}
+
+		else {
+			date = new Date("December " + dateControl + ", 2021")
+		}
+
 		change_date_text();
 		render_graphs();
-		collect_events();}}
+		collect_events();}
 
 	function change_date_text(direction) {
-		document.getElementById('date1').innerHTML = date.toISOString().substring(0, 10) + " - " + (dateControl + 1);
-		document.getElementById('date2').innerHTML = date.toISOString().substring(0, 10) + " - " + (dateControl + 1);
-		document.getElementById('date3').innerHTML = date.toISOString().substring(0, 10) + " - " + (dateControl + 1);
+		document.getElementById('date1').innerHTML = date.toISOString().substring(0, 10) + " - " + (NextDate);
+		document.getElementById('date2').innerHTML = date.toISOString().substring(0, 10) + " - " + (NextDate);
+		document.getElementById('date3').innerHTML = date.toISOString().substring(0, 10) + " - " + (NextDate);
 	}
 
 
@@ -307,36 +352,37 @@
 
 			}
 
-			console.log(xValues[0])
-
-			new Chart("roomlocation", {
+			var chart1 = new Chart("roomlocation", {
 			type: "line",
 			data: {
 				labels: xValues,
 				datasets: [{
 				data: bdrmBool,
 				borderColor: "red",
-				fill: true
+                backgroundColor: "red",
+            	fill: 1,
 				},{
 				data: ktchnBool,
 				borderColor: "green",
-				fill: true
+                backgroundColor: "green",
+            	fill: 1,
 				},{
 				data: lvngrmBool,
 				borderColor: "blue",
-				fill: true
-				},{
-				data: wyBool,
-				borderColor: "black",
-				fill: true
+                backgroundColor: "blue",
+            	fill: 1,
 				}]
 			},
 			options: {
-				legend: {display: false}
+				legend: {display: false},
+				animation: {duration: 0},
+				tooltips: {enabled: false},
+				hover: {mode: null},
+				maintainAspectRatio: false
 			}
 			});
 
-			new Chart("bedroom", {
+			var chart2 = new Chart("bedroom", {
 			type: "line",
 			data: {
 				labels: xValues,
@@ -347,11 +393,15 @@
 				}]
 			},
 			options: {
-				legend: {display: false}
+				legend: {display: false},
+				animation: {duration: 0},
+				tooltips: {enabled: false},
+				hover: {mode: null},
+				maintainAspectRatio: false
 			}
 			});
 
-			new Chart("livingroom", {
+			var chart3 = new Chart("livingroom", {
 			type: "line",
 			data: {
 				labels: xValues,
@@ -362,11 +412,15 @@
 				}]
 			},
 			options: {
-				legend: {display: false}
+				legend: {display: false},
+				animation: {duration: 0},
+				tooltips: {enabled: false},
+				hover: {mode: null},
+				maintainAspectRatio: false,
 			}
 			});
 
-			new Chart("kitchen", {
+			var chart4 = new Chart("kitchen", {
 			type: "line",
 			data: {
 				labels: xValues,
@@ -377,7 +431,11 @@
 				}]
 			},
 			options: {
-				legend: {display: false}
+				legend: {display: false},
+				animation: {duration: 0},
+				tooltips: {enabled: false},
+				hover: {mode: null},
+				maintainAspectRatio: false
 			}
 			});
 

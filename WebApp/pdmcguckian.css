@@ -114,17 +114,17 @@ h5 { /*Home Body Text*/
 
 h6 { /* Mobile Home Body Text*/
     font-family: neue-haas-grotesk-display,sans-serif;
-    font-weight: 500;
+    font-weight: 600;
     font-style: normal;
-    font-size: 18px;
-    margin-bottom: 30px;
-    text-align: left;
-    line-height: 1.6;
+    font-size: 23px;
     margin-block-start: 0em;
+    margin-block-end: 0em;
+    line-height: 1.6;
 }
 
 canvas {
     padding-bottom: 0px;
+    height: 400px;
 }
 
 
