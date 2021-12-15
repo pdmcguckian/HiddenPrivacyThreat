@@ -99,11 +99,11 @@
 				<div class = "h_20col">
 					<div class="h_col_card">
 						<h4>Sleep Quality</h4>
-						<h4>Good</h4>
+						<h4 id="sleepQualityPrediction"></h4>
 					</div>
 					<div class="h_col_card">
 						<h4>Alcohol Consumed</h4>
-						<h4>False</h4>
+						<h4 id="alcoholPrediction"></h4>
 					</div>
 				</div>
 			</div>
@@ -140,7 +140,7 @@
 						</div>
 						<div class="h_halfcol">
 							<div class="h_col_card">
-								<h4>Alcohol</h4>
+								<h4>Alcohol Consumed</h4>
 								<h4 id="alcoholconsumed"></h4>
 							</div>
 						</div>
@@ -217,18 +217,23 @@
 	var dateControl = 16;
 	var NextDate = 17;
 	var date = new Date("November " + dateControl + ", 2021")
+	var chart1 = new Chart("roomlocation", {});
+	var chart2 = new Chart("bedroom", {});
+	var chart3 = new Chart("livingroom", {});
+	var chart4 = new Chart("kitchen", {});
+
 	change_date_text();
 	render_graphs();
 	collect_events();
 	charts_drawn = false;
 
 	function change_date(direction) {
-		if (charts_drawn) {
-				chart1.destroy();
-				chart2.destroy();
-				chart3.destroy();
-				chart4.destroy();
-			}
+
+		chart1.destroy();
+		chart2.destroy();
+		chart3.destroy();
+		chart4.destroy();
+
 		dateControl = dateControl + direction;
 		NextDate = dateControl + 1;
 
@@ -352,7 +357,9 @@
 
 			}
 
-			var chart1 = new Chart("roomlocation", {
+			make_predictions(ktchnBool, lvngrmBool, bdrmBool);
+
+			var chart2 = new Chart("roomlocation", {
 			type: "line",
 			data: {
 				labels: xValues,
@@ -474,14 +481,62 @@
 		xhr.onreadystatechange = function () {
 		if (xhr.readyState === 4) {
 			var collectedEventData = JSON.parse(xhr.responseText);
-			
+			console.log(collectedEventData)
 			//Collect Values
 			sleepQuality = collectedEventData[0].SleepEfficiency.$numberInt;
+			if (sleepQuality == undefined) {
+				sleepQuality = collectedEventData[0].SleepEfficiency.$numberLong;
+			}
 			AlcoholConsumed = collectedEventData[0].AlcoholConsumed;
-			document.getElementById('sleepquality').innerHTML = sleepQuality;
-			document.getElementById('alcoholconsumed').innerHTML = AlcoholConsumed;
 
+			if (AlcoholConsumed) {
+			document.getElementById('alcoholconsumed').innerHTML = "Yes";
+			}
+			else {
+			document.getElementById('alcoholconsumed').innerHTML = "No";
+			}
+
+			if (sleepQuality > 84) {
+			document.getElementById('sleepquality').innerHTML  = "Good";
+			}
+			else {
+			document.getElementById('sleepquality').innerHTML = "Poor";
+			}
 	}}}
+
+
+	async function make_predictions(ktchnBool, lvngrmBool, bdrmBool) {
+		ktchnTime = ktchnBool.reduce((partial_sum, a) => partial_sum + a, 0)
+		lvngrmTime = lvngrmBool.reduce((partial_sum, a) => partial_sum + a, 0)
+		bdrmTime = bdrmBool.reduce((partial_sum, a) => partial_sum + a, 0)
+		timeIn = 0;
+
+		for (let i = 0; i < 1440; i++) { 
+			if (ktchnBool[i] == 1 || lvngrmBool[i] == 1 || bdrmBool[i] == 1) {
+				timeIn = i;
+				break
+			}
+			}
+		
+		y_sleep = -0.012*timeIn -0.00382*lvngrmTime+ 0.015*bdrmTime +  0.00206 * ktchnTime-1.81;
+		y_alcohol = 0.0189*timeIn + 0.0599*lvngrmTime + 0.0173*bdrmTime +0.0916*ktchnTime-27.51;
+
+		if (y_sleep < 0) {
+			document.getElementById('sleepQualityPrediction').innerHTML = "Poor";
+		}
+		else {
+			document.getElementById('sleepQualityPrediction').innerHTML = "Good";
+		}
+
+		if (y_alcohol < 0) {
+			document.getElementById('alcoholPrediction').innerHTML = "No";
+		}
+		else {
+			document.getElementById('alcoholPrediction').innerHTML = "Yes";
+		}
+
+		}
+
 
 </script>
 

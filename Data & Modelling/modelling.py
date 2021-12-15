@@ -2,18 +2,19 @@ from numpy.lib.twodim_base import diagflat
 import pymongo
 import csv
 import pandas as pd
+import numpy as np
 from sklearn import svm, tree
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.preprocessing import PolynomialFeatures
 from sklearn.model_selection import cross_val_score
 from sklearn.preprocessing import StandardScaler
-
+import pickle
 
 
 
 dimension_reduced_ble = {}
-with open('/Users/pdmcguckian/Documents/IoT/Project/SIoT/Modeling/BLEData.csv', 'r') as file:
+with open('/Users/pdmcguckian/Documents/IoT/BLEData.csv', 'r') as file:
     count = 0
     date = 12
     bdrm = 0
@@ -80,30 +81,31 @@ with open('/Users/pdmcguckian/Documents/IoT/Project/SIoT/Modeling/BLEData.csv', 
 print(dimension_reduced_ble)
 
 dataset = []
-with open('/Users/pdmcguckian/Documents/IoT/Project/SIoT/Modeling/PredictionData.csv', 'r') as file:
+with open('/Users/pdmcguckian/Documents/IoT/PredictionData.csv', 'r') as file:
     reader = csv.reader(file)
     for row in reader:
         date = int(row[0])
         alcohol = int(row[1])
         sleep = int(row[2])
 
-        if sleep > 84:
-            sleep_quality = 1
+        if sleep != 0:
+            if sleep > 84:
+                sleep_quality = 1
 
-        else:
-            sleep_quality = 0
+            else:
+                sleep_quality = 0
 
-        instance = [alcohol, sleep_quality, dimension_reduced_ble[date][0], dimension_reduced_ble[date][1], dimension_reduced_ble[date][2], dimension_reduced_ble[date][3]]
-        dataset.append(instance)
+            instance = [alcohol, sleep_quality, dimension_reduced_ble[date][0], dimension_reduced_ble[date][1], dimension_reduced_ble[date][2], dimension_reduced_ble[date][3]]
+            dataset.append(instance)
 
 
 df = pd.DataFrame(dataset, columns=['Alcohol', 'Sleep', 'TimeIn', 'LivingRoom', 'Bedroom', 'Kitchen'])
-df = df.sample(frac=1).reset_index(drop=True)
-
+df = df.sample(frac=1, random_state=42).reset_index(drop=True)
+pd.DataFrame.to_csv(df, 'data.csv')
 print(df)
-y = df['Sleep']
+#y = df['Sleep']
 X = df.drop(columns=["Alcohol", "Sleep"])
-#y = df['Alcohol']
+y = df['Alcohol']
 #X = df.drop(columns=["Alcohol", "Sleep"])
 
 #clf = svm.SVC(kernel='linear', C=10)
@@ -111,11 +113,9 @@ X = df.drop(columns=["Alcohol", "Sleep"])
 #clf = tree.DecisionTreeClassifier(max_depth = 2, min_impurity_decrease=0.0)
 #poly = PolynomialFeatures(degree = 2, interaction_only=False, include_bias=False)
 #X = poly.fit_transform(X)
-clf = LogisticRegression(max_iter=1300, C=100)
+#clf = LogisticRegression(max_iter=1300, C=100)
 scores = cross_val_score(clf, X, y, cv=3)
 
 print(scores)
 print("%0.2f accuracy with a standard deviation of %0.2f" % (scores.mean(), scores.std())) 
 
-clf.fit(X, y)
-print(clf.coef_)
