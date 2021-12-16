@@ -101,15 +101,14 @@ with open('/Users/pdmcguckian/Documents/IoT/PredictionData.csv', 'r') as file:
 
 df = pd.DataFrame(dataset, columns=['Alcohol', 'Sleep', 'TimeIn', 'LivingRoom', 'Bedroom', 'Kitchen'])
 df = df.sample(frac=1, random_state=42).reset_index(drop=True)
-pd.DataFrame.to_csv(df, 'data.csv')
+#pd.DataFrame.to_csv(df, 'data.csv')
 print(df)
-#y = df['Sleep']
-X = df.drop(columns=["Alcohol", "Sleep"])
-y = df['Alcohol']
-#X = df.drop(columns=["Alcohol", "Sleep"])
 
-#clf = svm.SVC(kernel='linear', C=10)
-#clf = RandomForestClassifier(max_depth=2, min_samples_split=2, min_impurity_decrease=0)
+X = df.drop(columns=["Alcohol", "Sleep"])
+#y = df['Alcohol']
+y = df['Sleep']
+
+clf = svm.SVC(kernel='linear', C=10)
 #clf = tree.DecisionTreeClassifier(max_depth = 2, min_impurity_decrease=0.0)
 #poly = PolynomialFeatures(degree = 2, interaction_only=False, include_bias=False)
 #X = poly.fit_transform(X)

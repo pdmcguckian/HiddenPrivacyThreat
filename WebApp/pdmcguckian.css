@@ -103,7 +103,7 @@ h5 { /*Home Body Text*/
     font-family: neue-haas-grotesk-display,sans-serif;
     font-weight: 500;
     font-style: normal;
-    font-size: 2.3vmin;
+    font-size: 17px;
     margin-bottom: 30px;
     text-align: left;
     line-height: 1.6;
@@ -246,12 +246,23 @@ canvas {
 .h_col_card {
     background-color: black;
     border-radius: 20px;
-    height: 225px;
+    height: 250px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
 }
+
+.h_pred_col_card {
+    background-color: black;
+    border-radius: 20px;
+    height: 150px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
 
 .h_introvideoboarder{ /* DIV that project info sits inside*/
     width: 100%;
