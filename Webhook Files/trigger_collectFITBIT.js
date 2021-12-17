@@ -44,12 +44,13 @@ exports = async function(){
    date.setDate(date.getDate() - 1 );
    const yesterdaysDate = date.toISOString().substring(0, 10);
    
-   //Push Sleep Data to Collection
+   //Decode JSON Sleep Response
    APIResponse2 = EJSON.parse(sleepDataRequestResponse.body.text());
    
-   //Push Sleep Data to Collection
+   //Decode JSON Water Repsonse
    APIResponse3 = EJSON.parse(waterDataRequestURL.body.text());
    
+   //If any water is consumed, set alcohol value to postiivie
    if (APIResponse3.water[0].amount > 0) {
       var alcohol = true;
    }
@@ -57,10 +58,12 @@ exports = async function(){
    else {
       var alcohol = false;
    }
+
+   //Push values to database
    return EventData.updateOne(
                  {"dateID":yesterdaysDate}, //Filter
                  {$set: {"SleepEfficiency": APIResponse2.sleep[0].efficiency, "SleepDuration": APIResponse2.sleep[0].duration, "SleepStartTime": APIResponse2.sleep[0].startTime, "AlcoholConsumed": alcohol}},
-                 {upsert:true} //Options
+                 {upsert:true} //If no value for this date, creare a new instance
                
                   );
 

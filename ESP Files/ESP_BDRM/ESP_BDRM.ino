@@ -1,3 +1,4 @@
+//Import Packages
 #include <Arduino.h>
 #include <WiFi.h>
 #include <HTTPClient.h>
@@ -20,6 +21,8 @@ const char* ssid = "BT-7XCK6F";
 const char* password =  "urgcqY3H3XCPDv";
 const char* serverName = "https://webhooks.mongodb-realm.com/api/client/v2.0/app/predictor-rjhbq/service/PushBLEData/incoming_webhook/webhook_bdrm?secret=XXXXXXXXX";
 StaticJsonDocument<500> doc;
+
+//Array to store cached data if can't connect to wifi
 int backlog = 0;
 int timeStampStack[720];
 int RSSIStack[720];
@@ -27,8 +30,8 @@ int RSSIStack[720];
 //Server used to find time
 const char* ntpServer = "pool.ntp.org";
 
-int awakeTime;
-int delayTime;
+int awakeTime; //time stamp of data collection
+int delayTime; // time until next pill
 
 
 //Function to deduce the RSSI signal strength of the FitBit
@@ -66,13 +69,9 @@ int pollBLEBeacon() {
 //Function to push collected data instance to MongoDB server
 int pushToDB(int becaonRSSI, int awakeTime) {
 
+  //Saves current values to cahe
   timeStampStack[backlog] = awakeTime;
   RSSIStack[backlog] = becaonRSSI;
-
-  int vla1 = timeStampStack[backlog];
-  int vla2 = RSSIStack[backlog];
-  //Serial.println(vla1);
-  //Serial.println(vla2);
 
   //Connects to home WiFi network
   WiFi.begin(ssid, password);
@@ -87,6 +86,7 @@ int pushToDB(int becaonRSSI, int awakeTime) {
   if (WiFi.status() == WL_CONNECTED) {
       Serial.println("Connected to the WiFi network");
       
+      //Pushes every value in the backlog
       for (int i = 0; i <= backlog; i++) { 
         
         //Saves the standardised awake minute and collected RSSI value to a JSON file
@@ -113,6 +113,7 @@ int pushToDB(int becaonRSSI, int awakeTime) {
 
 
     }
+    //If unable to connect to wifi, increase backlog.
     else {
       Serial.println("WiFi Connection Failed");
       backlog = backlog + 1;
@@ -122,6 +123,7 @@ int pushToDB(int becaonRSSI, int awakeTime) {
     
 }
 
+//Calculates how long to wait until next BLE Poll
 int timeTillNextPoll() {  
   configTime(0, 0, ntpServer);
   time_t now;
@@ -136,6 +138,7 @@ int timeTillNextPoll() {
   delayTime = (60-(now % 60))*1000;
   awakeTime = now+(delayTime/1000);
 
+  //Disconnects from Wifi
   WiFi.disconnect(true);
   WiFi.mode(WIFI_OFF);
   
@@ -151,9 +154,11 @@ void setup() {
   Serial.println("Running BLE Detection & POST Routine."); // Print Scanning
   pinMode(2, OUTPUT); //make BUILTIN_LED pin as output
   
+  //Calulates time to collect first datapoint
   timeTillNextPoll();
   Serial.println(delayTime);
 
+  //Sleeps until top of first minute
   Serial.println("Entering Deep Sleep");
   delay(delayTime);
 
@@ -162,14 +167,22 @@ void setup() {
   
 }
 void loop() {
+
+  //Collects BLE Data
   int beaconRSSI = pollBLEBeacon();
+
+  //Pushes it to Web app
   int response = pushToDB(beaconRSSI, awakeTime);
   
+  //If sucessful, it resets caching system
   if (response == 1) {
     backlog = 0;
   }
+
+  //calculates time uuntil next poll
   timeTillNextPoll();
 
+  //Sleeps untiil next poll
   Serial.println("Entering Deep Sleep");
   delay(delayTime);
 };
