@@ -1,7 +1,8 @@
 # SIoT
 DE4 Sensing &amp; IoT Project
-Explination Video: https://www.youtube.com/watch?v=h6ho4Wmp-jg
-URL: https://hiddenthreat.org
+Explination Video: https://www.youtube.com/watch?v=h6ho4Wmp-jg;
+
+URL: https://hiddenthreat.org;
 
 Modern sensing and wireless networking technology have led to rising adoption of consumer smart home devices. While these devices have the potential to provide users with convenience and utility – there is q growing fear that they are impacting our personal privacy.
 
