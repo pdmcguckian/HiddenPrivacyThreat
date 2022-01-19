@@ -4,6 +4,8 @@ Explination Video: https://www.youtube.com/watch?v=h6ho4Wmp-jg;
 
 URL: https://hiddenthreat.org;
 
+![Example](/SystemDiagram.png)
+
 Modern sensing and wireless networking technology have led to rising adoption of consumer smart home devices. While these devices have the potential to provide users with convenience and utility – there is q growing fear that they are impacting our personal privacy.
 
 The continuous and linkable nature of smart home data gives it an unparalleled potential to infer sensitive user information. Despite privacy being a fundamental human right, service providers continue to build their business models around surveillance capitalism – with companies like Alphabet already using user data for targeted advertising.
